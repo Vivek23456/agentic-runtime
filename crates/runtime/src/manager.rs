@@ -34,6 +34,7 @@ impl RuntimeManager<DefaultExecutor> {
 let worker = Worker::new(
     id,
     registry.clone(),
+    event_bus.clone(),
     executor.clone(),
 );
             let handle = worker.start(queue.receiver());

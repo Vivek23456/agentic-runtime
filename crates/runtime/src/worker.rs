@@ -4,6 +4,7 @@ use tokio::task::JoinHandle;
 use tracing::{error, info};
 
 use crate::{
+    events::{EventBus, RuntimeEvent},
     executor::Executor,
     queue::SharedReceiver,
     registry::TaskRegistry,
@@ -12,6 +13,7 @@ use crate::{
 pub struct Worker<E: Executor> {
     id: usize,
     registry: TaskRegistry,
+    event_bus:EventBus,
     executor: Arc<E>,
 }
 
@@ -19,11 +21,14 @@ impl<E: Executor> Worker<E> {
     pub fn new(
     id: usize,
     registry: TaskRegistry,
+    event_bus: EventBus,
+
     executor: Arc<E>,
 ) -> Self {
     Self {
         id,
         registry,
+        event_bus,
         executor,
     }
 }
@@ -54,6 +59,11 @@ impl<E: Executor> Worker<E> {
         let mut registry_task = shared.write().await;
         registry_task.mark_running();
     }
+    self.event_bus.publish(
+    RuntimeEvent::TaskRunning {
+        task_id,
+    },
+);
 
     // Execute task
     let result = self.executor.execute(task).await;
@@ -63,9 +73,26 @@ impl<E: Executor> Worker<E> {
         let mut registry_task = shared.write().await;
 
         match &result {
-            Ok(_) => registry_task.mark_completed(),
-            Err(_) => registry_task.mark_failed(),
-        }
+    Ok(_) => {
+        registry_task.mark_completed();
+
+        self.event_bus.publish(
+            RuntimeEvent::TaskCompleted {
+                task_id,
+            },
+        );
+    }
+
+    Err(_) => {
+        registry_task.mark_failed();
+
+        self.event_bus.publish(
+            RuntimeEvent::TaskFailed {
+                task_id,
+            },
+        );
+    }
+}
     }
 
     // Log failures
