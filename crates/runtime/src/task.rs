@@ -33,3 +33,24 @@ impl Task {
         }
     }
 }
+impl Task {
+    pub fn mark_queued(&mut self) {
+        self.status = TaskStatus::Queued;
+    }
+
+    pub fn mark_running(&mut self) {
+        self.status = TaskStatus::Running;
+    }
+
+    pub fn mark_completed(&mut self) {
+        self.status = TaskStatus::Completed;
+    }
+
+    pub fn mark_failed(&mut self) {
+        self.status = TaskStatus::Failed;
+    }
+
+    pub fn mark_cancelled(&mut self) {
+        self.status = TaskStatus::Cancelled;
+    }
+}
