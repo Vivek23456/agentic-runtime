@@ -1,4 +1,3 @@
-# agentic-runtime-
 # Agent Runtime
 
 > A high-performance, distributed runtime for building, executing, and monitoring AI agents in production.
