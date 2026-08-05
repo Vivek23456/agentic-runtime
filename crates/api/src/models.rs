@@ -19,3 +19,28 @@ pub struct TaskResponse {
     pub name: String,
     pub status: String,
 }
+use domain::{AgentFramework, ProgrammingLanguage};
+
+#[derive(Debug, Deserialize)]
+pub struct CreateAgentRequest {
+    pub name: String,
+    pub description: String,
+    pub framework: AgentFramework,
+    pub language: ProgrammingLanguage,
+    pub repository: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CreateAgentResponse {
+    pub agent_id: Uuid,
+}
+
+#[derive(Debug, Serialize)]
+pub struct AgentResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub description: String,
+    pub framework: AgentFramework,
+    pub language: ProgrammingLanguage,
+    pub repository: Option<String>,
+}

@@ -9,6 +9,7 @@ use crate::{
     router::create_router,
     state::AppState,
 };
+use domain::AgentRegistry;
 
 mod models;
 mod router;
@@ -29,6 +30,7 @@ async fn main() {
 
     let state = AppState {
         runtime,
+        agents: AgentRegistry::new(),
     };
 
     let app = create_router(state);
