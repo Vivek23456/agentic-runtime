@@ -10,6 +10,25 @@ pub enum TaskStatus {
     Failed,
     Cancelled,
 }
+impl std::fmt::Display for TaskStatus {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
+        let status = match self {
+            TaskStatus::Created => "Created",
+            TaskStatus::Queued => "Queued",
+            TaskStatus::Running => "Running",
+            TaskStatus::Completed => "Completed",
+            TaskStatus::Failed => "Failed",
+            TaskStatus::Retrying => "Retrying",
+            TaskStatus::Cancelled => "Cancelled",
+        };
+
+        write!(f, "{status}")
+    }
+}
+
 impl TaskStatus {
     pub fn can_transition_to(self, next: TaskStatus) -> bool {
         matches!(

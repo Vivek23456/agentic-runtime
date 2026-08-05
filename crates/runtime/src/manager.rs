@@ -68,6 +68,12 @@ self.queue.push(task).await?;
 Ok(TaskHandle::new(id))
 }
 
+pub async fn task(
+    &self,
+    id: uuid::Uuid,
+) -> Option<crate::registry::SharedTask> {
+    self.registry.get(id).await
+}
     /// Returns the number of worker tasks spawned.
     pub fn worker_count(&self) -> usize {
         self.workers.len()

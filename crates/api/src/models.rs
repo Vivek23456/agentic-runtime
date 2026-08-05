@@ -12,3 +12,10 @@ pub struct CreateTaskRequest {
 pub struct CreateTaskResponse {
     pub task_id: Uuid,
 }
+
+#[derive(Debug, Serialize)]
+pub struct TaskResponse {
+    pub id: Uuid,
+    pub name: String,
+    pub status: String,
+}
