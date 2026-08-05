@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use tokio::sync::{mpsc, Mutex};
 
-use crate::task::Task;
+use crate::tasks::Task;
 
 pub type SharedReceiver = Arc<Mutex<mpsc::Receiver<Task>>>;
 

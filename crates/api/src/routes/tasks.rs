@@ -54,3 +54,24 @@ pub async fn get_task(
         status: task.status.to_string(),
     }))
 }
+
+pub async fn list_tasks(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<TaskResponse>>, StatusCode> {
+
+    let shared_tasks = state.runtime.tasks().await;
+
+    let mut response = Vec::with_capacity(shared_tasks.len());
+
+    for shared in shared_tasks {
+        let task = shared.read().await;
+
+        response.push(TaskResponse {
+            id: task.id,
+            name: task.name.clone(),
+            status: task.status.to_string(),
+        });
+    }
+
+    Ok(Json(response))
+}

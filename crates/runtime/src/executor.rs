@@ -5,7 +5,7 @@ use tracing::info;
 
 use crate::{
     error::RuntimeError,
-    task::Task,
+    tasks::Task,
 };
 
 /// Boxed future returned by executors.

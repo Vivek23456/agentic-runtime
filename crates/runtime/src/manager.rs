@@ -3,8 +3,8 @@ use crate::{
     executor::{DefaultExecutor, Executor},
     handle::TaskHandle,
     queue::{QueueError, TaskQueue},
-    registry::TaskRegistry,
-    task::Task,
+    registry::{SharedTask, TaskRegistry},
+    tasks::Task,
     worker::Worker,
 };
 
@@ -67,12 +67,17 @@ self.queue.push(task).await?;
 
 Ok(TaskHandle::new(id))
 }
-
 pub async fn task(
     &self,
     id: uuid::Uuid,
-) -> Option<crate::registry::SharedTask> {
+) -> Option<SharedTask> {
     self.registry.get(id).await
+}
+
+pub async fn tasks(
+    &self,
+) -> Vec<SharedTask> {
+    self.registry.list().await
 }
     /// Returns the number of worker tasks spawned.
     pub fn worker_count(&self) -> usize {

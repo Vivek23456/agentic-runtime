@@ -72,6 +72,12 @@ impl TaskRegistry {
 
         tasks.len()
     }
+    
+    pub async fn list(&self) -> Vec<SharedTask> {
+    let tasks = self.tasks.read().await;
+
+    tasks.values().cloned().collect()
+}
 
     /// Returns true when the registry is empty.
     pub async fn is_empty(&self) -> bool {
