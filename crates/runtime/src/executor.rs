@@ -3,7 +3,10 @@ use std::{future::Future, pin::Pin, time::Duration};
 use tokio::time::sleep;
 use tracing::info;
 
-use crate::{RuntimeError, Task};
+use crate::{
+    error::RuntimeError,
+    task::Task,
+};
 
 /// Boxed future returned by executors.
 pub type BoxFuture<'a, T> =
@@ -19,6 +22,7 @@ pub trait Executor: Send + Sync + 'static {
 /// Right now it only simulates work.
 /// Later we'll replace it with real executors
 /// (LLM, Python, Shell, Workflow, etc.).
+#[derive(Default)]
 pub struct DefaultExecutor;
 
 impl Executor for DefaultExecutor {

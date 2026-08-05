@@ -46,3 +46,32 @@ impl TaskQueue {
         Arc::clone(&self.receiver)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    use crate::Task;
+
+    #[tokio::test]
+    async fn push_and_receive_task() {
+        let queue = TaskQueue::new(8);
+
+        let task = Task::new(
+            "example",
+            json!({"hello": "world"}),
+        );
+
+        queue.push(task).await.unwrap();
+
+        let receiver = queue.receiver();
+
+        let received = {
+            let mut rx = receiver.lock().await;
+            rx.recv().await
+        };
+
+        assert!(received.is_some());
+    }
+}

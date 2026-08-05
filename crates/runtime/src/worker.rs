@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use tokio::task::JoinHandle;
 use tracing::{error, info};
 
@@ -6,21 +8,19 @@ use crate::{
     queue::SharedReceiver,
 };
 
-pub struct Worker {
+pub struct Worker<E: Executor> {
     id: usize,
+    executor: Arc<E>,
 }
 
-impl Worker {
-    pub fn new(id: usize) -> Self {
-        Self { id }
+impl<E: Executor> Worker<E> {
+    pub fn new(id: usize, executor: Arc<E>) -> Self {
+        Self { id, executor }
     }
 
-    pub fn start(
-        self,
-        receiver: SharedReceiver,
-    ) -> JoinHandle<()> {
+    pub fn start(self, receiver: SharedReceiver) -> JoinHandle<()> {
         tokio::spawn(async move {
-            info!("Worker {} started.", self.id);
+            info!(worker = self.id, "Worker started");
 
             loop {
                 let task = {
@@ -37,7 +37,7 @@ impl Worker {
                             "Received task"
                         );
 
-                        if let Err(err) = Executor::execute(task).await {
+                        if let Err(err) = self.executor.execute(task).await {
                             error!(
                                 worker = self.id,
                                 error = %err,

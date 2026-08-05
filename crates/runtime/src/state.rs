@@ -32,3 +32,34 @@ impl TaskStatus {
         )
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn created_can_transition_to_queued() {
+        assert!(TaskStatus::Created.can_transition_to(TaskStatus::Queued));
+    }
+
+    #[test]
+    fn queued_can_transition_to_running() {
+        assert!(TaskStatus::Queued.can_transition_to(TaskStatus::Running));
+    }
+
+    #[test]
+    fn completed_is_terminal() {
+        assert!(TaskStatus::Completed.is_terminal());
+    }
+
+    #[test]
+    fn cancelled_is_terminal() {
+        assert!(TaskStatus::Cancelled.is_terminal());
+    }
+
+    #[test]
+    fn invalid_transition_should_fail() {
+        assert!(
+            !TaskStatus::Completed.can_transition_to(TaskStatus::Running)
+        );
+    }
+}
