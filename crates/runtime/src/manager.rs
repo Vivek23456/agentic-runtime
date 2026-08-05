@@ -3,11 +3,15 @@ use crate::{
     executor::{DefaultExecutor, Executor},
     handle::TaskHandle,
     queue::{QueueError, TaskQueue},
+    registry::TaskRegistry,
     task::Task,
     worker::Worker,
 };
 
+
+
 pub struct RuntimeManager<E: Executor> {
+    registry: TaskRegistry,
     queue: TaskQueue,
     executor: Arc<E>,
     workers: Vec<tokio::task::JoinHandle<()>>,
@@ -16,24 +20,30 @@ pub struct RuntimeManager<E: Executor> {
 impl RuntimeManager<DefaultExecutor> {
     /// Creates a runtime using the default executor.
     pub fn new(worker_count: usize, queue_capacity: usize) -> Self {
+        let registry = TaskRegistry::new();
+
         let queue = TaskQueue::new(queue_capacity);
         let executor = Arc::new(DefaultExecutor::default());
 
         let mut workers = Vec::with_capacity(worker_count);
 
         for id in 0..worker_count {
-            let worker = Worker::new(id, executor.clone());
-
+let worker = Worker::new(
+    id,
+    registry.clone(),
+    executor.clone(),
+);
             let handle = worker.start(queue.receiver());
 
             workers.push(handle);
         }
 
         Self {
-            queue,
-            executor,
-            workers,
-        }
+    registry,
+    queue,
+    executor,
+    workers,
+}
     }
 }
 
@@ -43,11 +53,19 @@ impl<E: Executor> RuntimeManager<E> {
     &self,
     task: Task,
 ) -> Result<TaskHandle, QueueError> {
-    let id = task.id;
+   let mut task = task;
 
-    self.queue.push(task).await?;
+task.mark_queued();
 
-    Ok(TaskHandle::new(id))
+let id = task.id;
+
+// Store a copy in the registry
+self.registry.insert(task.clone()).await;
+
+// Send the original to the queue
+self.queue.push(task).await?;
+
+Ok(TaskHandle::new(id))
 }
 
     /// Returns the number of worker tasks spawned.

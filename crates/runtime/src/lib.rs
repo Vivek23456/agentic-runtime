@@ -17,4 +17,7 @@ pub mod handle;
 pub use handle::TaskHandle;
 pub mod registry;
 
-pub use registry::TaskRegistry;
+pub use registry::{
+    SharedTask,
+    TaskRegistry,
+};
