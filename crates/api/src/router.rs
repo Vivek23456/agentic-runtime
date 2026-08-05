@@ -5,7 +5,7 @@ use axum::{
 
 use crate::{
     routes::{
-        agents::create_agent,
+        agents::{create_agent,list_agents,get_agent},
         health::health,
         tasks::{
             create_task,
@@ -29,7 +29,11 @@ pub fn create_router(state: AppState) -> Router {
         )
         .route(
             "/agents",
-            post(create_agent),
+            post(create_agent).get(list_agents),
+        )
+        .route(
+            "/agents/:id",
+            get(get_agent),
         )
         .with_state(state)
 }
