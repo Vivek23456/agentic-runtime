@@ -12,3 +12,6 @@ pub use queue::{QueueError, SharedReceiver, TaskQueue};
 pub use state::TaskStatus;
 pub use task::Task;
 pub use error::RuntimeError;
+pub mod handle;
+
+pub use handle::TaskHandle;

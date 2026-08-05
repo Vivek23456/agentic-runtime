@@ -1,11 +1,10 @@
 use std::sync::Arc;
-
 use crate::{
     executor::{DefaultExecutor, Executor},
-    queue::TaskQueue,
+    handle::TaskHandle,
+    queue::{QueueError, TaskQueue},
     task::Task,
     worker::Worker,
-    queue::QueueError,
 };
 
 pub struct RuntimeManager<E: Executor> {
@@ -40,9 +39,16 @@ impl RuntimeManager<DefaultExecutor> {
 
 impl<E: Executor> RuntimeManager<E> {
     /// Submit a task for asynchronous execution.
-    pub async fn submit(&self, task: Task) -> Result<(), QueueError> {
-        self.queue.push(task).await
-    }
+   pub async fn submit(
+    &self,
+    task: Task,
+) -> Result<TaskHandle, QueueError> {
+    let id = task.id;
+
+    self.queue.push(task).await?;
+
+    Ok(TaskHandle::new(id))
+}
 
     /// Returns the number of worker tasks spawned.
     pub fn worker_count(&self) -> usize {
