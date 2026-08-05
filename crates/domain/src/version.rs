@@ -12,5 +12,32 @@ pub struct AgentVersion {
 
     pub description: String,
 
+    pub prompt: String,
+
+    pub model: String,
+
+    pub temperature: f32,
+
     pub created_at: DateTime<Utc>,
+}
+impl AgentVersion {
+    pub fn new(
+        agent_id: Uuid,
+        version: String,
+        description: String,
+        prompt: String,
+        model: String,
+        temperature: f32,
+    ) -> Self {
+        Self {
+            id: Uuid::new_v4(),
+            agent_id,
+            version,
+            description,
+            prompt,
+            model,
+            temperature,
+            created_at: Utc::now(),
+        }
+    }
 }

@@ -15,6 +15,7 @@ dependencies = [
 name = "api"
 version = "0.1.0"
 dependencies = [
+ "application",
  "axum",
  "domain",
  "runtime",
@@ -23,6 +24,16 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
+name = "application"
+version = "0.1.0"
+dependencies = [
+ "domain",
+ "runtime",
+ "tokio",
  "uuid",
 ]
 

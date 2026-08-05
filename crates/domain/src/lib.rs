@@ -12,4 +12,11 @@ pub mod version;
 pub use version::*;
 pub mod agent_registry;
 
+pub mod version_registry;
+
+pub use version::*;
+pub use version_registry::*;
 pub use agent_registry::*;
+pub mod execution_registry;
+
+pub use execution_registry::*;
