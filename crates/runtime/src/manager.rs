@@ -6,6 +6,7 @@ use crate::{
     registry::{SharedTask, TaskRegistry},
     tasks::Task,
     worker::Worker,
+    events::EventBus,
 };
 
 
@@ -13,6 +14,7 @@ use crate::{
 pub struct RuntimeManager<E: Executor> {
     registry: TaskRegistry,
     queue: TaskQueue,
+    event_bus: EventBus,
     executor: Arc<E>,
     workers: Vec<tokio::task::JoinHandle<()>>,
 }
@@ -21,6 +23,7 @@ impl RuntimeManager<DefaultExecutor> {
     /// Creates a runtime using the default executor.
     pub fn new(worker_count: usize, queue_capacity: usize) -> Self {
         let registry = TaskRegistry::new();
+        let event_bus = EventBus::new(1024);
 
         let queue = TaskQueue::new(queue_capacity);
         let executor = Arc::new(DefaultExecutor::default());
@@ -41,6 +44,7 @@ let worker = Worker::new(
         Self {
     registry,
     queue,
+    event_bus,
     executor,
     workers,
 }
@@ -72,6 +76,9 @@ pub async fn task(
     id: uuid::Uuid,
 ) -> Option<SharedTask> {
     self.registry.get(id).await
+}
+pub fn event_bus(&self) -> EventBus {
+    self.event_bus.clone()
 }
 
 pub async fn tasks(
