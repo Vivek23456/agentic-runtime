@@ -50,7 +50,11 @@ impl TaskQueue {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json::json;
+
+    use domain::{
+        ExecutionRequest,
+        InferenceRequest,
+    };
 
     use crate::Task;
 
@@ -60,7 +64,13 @@ mod tests {
 
         let task = Task::new(
             "example",
-            json!({"hello": "world"}),
+            ExecutionRequest::Inference(
+                InferenceRequest {
+                    model: "gpt-5".to_string(),
+                    prompt: "hello".to_string(),
+                    temperature: 0.7,
+                },
+            ),
         );
 
         queue.push(task).await.unwrap();
