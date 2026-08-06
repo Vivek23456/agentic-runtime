@@ -3,9 +3,9 @@ use serde::{Deserialize, Serialize};
 use crate::state::TaskStatus;
 use uuid::Uuid;
  
+use domain::ExecutionRequest;
 
 
-use serde_json::Value;
 
 
 
@@ -14,8 +14,9 @@ pub struct Task {
     
 
     pub id: Uuid,
-    pub payload: Value,
-    pub name: String,
+
+
+pub execution: ExecutionRequest,    pub name: String,
     pub status: TaskStatus,
    pub priority: u8,
     pub retry_count: u32,
@@ -25,14 +26,15 @@ pub struct Task {
 }
 
 impl Task {
-    pub fn new(name: impl Into<String>, payload:Value,
+    pub fn new(name: impl Into<String>,     execution: ExecutionRequest,
+
 ) -> Self {
         Self {
             id: Uuid::new_v4(),
             name: name.into(),
             status: TaskStatus::Created,
             
-            payload,
+            execution,
             priority: 0,
             retry_count: 0,
             created_at: Utc::now(),

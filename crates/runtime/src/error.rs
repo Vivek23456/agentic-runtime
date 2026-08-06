@@ -6,5 +6,8 @@ pub enum RuntimeError {
     InvalidStateTransition,
 
     #[error("task not found")]
-    TasknotFound,
+    TaskNotFound,
+
+    #[error("{0}")]
+    Internal(String),
 }
