@@ -17,7 +17,7 @@ use crate::{
 };
 
 pub struct OpenAIProvider {
-    config: OpenAIConfig,
+    
     client: OpenAIClient,
 }
 
@@ -33,7 +33,7 @@ impl OpenAIProvider {
         .map_err(|e| ProviderError::Internal(e.to_string()))?;
 
         Ok(Self {
-            config,
+            
             client,
         })
     }

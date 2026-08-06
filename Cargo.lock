@@ -137,7 +137,9 @@ version = "0.1.0"
 dependencies = [
  "application",
  "axum",
+ "config",
  "domain",
+ "providers",
  "runtime",
  "serde",
  "serde_json",
@@ -151,6 +153,7 @@ dependencies = [
 name = "application"
 version = "0.1.0"
 dependencies = [
+ "config",
  "domain",
  "providers",
  "runtime",

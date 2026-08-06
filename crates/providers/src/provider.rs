@@ -11,6 +11,4 @@ pub trait Provider: Send + Sync {
         request: InferenceRequest,
     ) -> Result<InferenceResponse, ProviderError>;
 }
-use config::{
-    OpenAIConfig,
-};
+ 

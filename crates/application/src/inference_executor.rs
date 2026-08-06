@@ -1,21 +1,24 @@
-use std::sync::Arc;
+
 
 use domain::ExecutionRequest;
-use providers::Provider;
+use providers::ProviderRegistry;
 
-use crate::{
-    error::RuntimeError,
-    executor::{BoxFuture, Executor},
-    tasks::Task,
+use runtime::{
+    BoxFuture,
+    Executor,
+    RuntimeError,
+    Task,
 };
 
 pub struct InferenceExecutor {
-    provider: Arc<dyn Provider>,
+    providers: ProviderRegistry,
 }
 
 impl InferenceExecutor {
-    pub fn new(provider: Arc<dyn Provider>) -> Self {
-        Self { provider }
+    pub fn new(
+        providers: ProviderRegistry,
+    ) -> Self {
+        Self { providers }
     }
 }
 
@@ -24,15 +27,31 @@ impl Executor for InferenceExecutor {
         &self,
         task: Task,
     ) -> BoxFuture<'static, Result<(), RuntimeError>> {
-        let provider = self.provider.clone();
+
+        let providers = self.providers.clone();
 
         Box::pin(async move {
             match task.execution {
+
                 ExecutionRequest::Inference(request) => {
+
+                    let provider = providers
+                        .get("openai")
+                        .await
+                        .ok_or(
+                            RuntimeError::Internal(
+                                "Provider not found".to_string(),
+                            ),
+                        )?;
+
                     let response = provider
                         .execute(request)
                         .await
-                        .map_err(|e| RuntimeError::Internal(e.to_string()))?;
+                        .map_err(|e| {
+                            RuntimeError::Internal(
+                                e.to_string(),
+                            )
+                        })?;
 
                     println!("{}", response.content);
                 }

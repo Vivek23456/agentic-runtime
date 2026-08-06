@@ -6,8 +6,11 @@ pub mod state;
 pub mod tasks;
 pub mod worker;
 
-pub use executor::{DefaultExecutor, Executor};
-pub use manager::RuntimeManager;
+pub use executor::{
+    BoxFuture,
+    DefaultExecutor,
+    Executor,
+};pub use manager::RuntimeManager;
 pub use queue::{QueueError, SharedReceiver, TaskQueue};
 pub use state::TaskStatus;
 pub use tasks::Task;

@@ -1,32 +1,35 @@
 use std::sync::Arc;
 
+use uuid::Uuid;
+
 use domain::{
     Execution,
     ExecutionRegistry,
+    ExecutionRequest,
+    InferenceRequest,
     SharedExecution,
     VersionRegistry,
 };
 
 use runtime::{
-    DefaultExecutor,
     RuntimeManager,
+    Task,
 };
 
-use uuid::Uuid;
+use crate::InferenceExecutor;
 
 #[derive(Clone)]
 pub struct ExecutionService {
     execution_registry: ExecutionRegistry,
     version_registry: VersionRegistry,
-    runtime: Arc<RuntimeManager<DefaultExecutor>>,
-    
+    runtime: Arc<RuntimeManager<InferenceExecutor>>,
 }
 
 impl ExecutionService {
     pub fn new(
         execution_registry: ExecutionRegistry,
         version_registry: VersionRegistry,
-        runtime: Arc<RuntimeManager<DefaultExecutor>>,
+        runtime: Arc<RuntimeManager<InferenceExecutor>>,
     ) -> Self {
         Self {
             execution_registry,
@@ -39,12 +42,38 @@ impl ExecutionService {
         &self,
         version_id: Uuid,
     ) -> Result<Execution, &'static str> {
-        // Verify the version exists.
-        if self.version_registry.get(version_id).await.is_none() {
-            return Err("Agent version not found");
-        }
 
-        let execution = Execution::new(version_id);
+        let version = self
+            .version_registry
+            .get(version_id)
+            .await
+            .ok_or("Agent version not found")?;
+
+        let version = version.read().await;
+
+        let inference = InferenceRequest {
+            model: version.model.clone(),
+            prompt: version.prompt.clone(),
+            temperature: version.temperature,
+        };
+
+        let execution_request =
+            ExecutionRequest::Inference(inference);
+
+        let mut execution = Execution::new(version_id);
+
+        let task = Task::new(
+            format!("Execution {}", execution.id),
+            execution_request,
+        );
+
+        let handle = self
+            .runtime
+            .submit(task)
+            .await
+            .map_err(|_| "Runtime submission failed")?;
+
+        execution.attach_task(handle.id());
 
         self.execution_registry
             .insert(execution.clone())
@@ -68,7 +97,7 @@ impl ExecutionService {
 
     pub fn runtime(
         &self,
-    ) -> Arc<RuntimeManager<DefaultExecutor>> {
+    ) -> Arc<RuntimeManager<InferenceExecutor>> {
         Arc::clone(&self.runtime)
     }
 }

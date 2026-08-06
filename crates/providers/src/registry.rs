@@ -21,18 +21,21 @@ impl ProviderRegistry {
     }
 
     /// Register a provider.
-    pub async fn register<P>(
-        &self,
-        name: impl Into<String>,
-        provider: P,
-    )
-    where
-        P: Provider + 'static,
-    {
-        let mut providers = self.providers.write().await;
+  pub async fn register<P>(
+    &self,
+    name: impl Into<String>,
+    provider: P,
+)
+where
+    P: Provider + 'static,
+{
+    let mut providers = self.providers.write().await;
 
-        providers.insert(name.into(), Arc::new(provider));
-    }
+    providers.insert(
+        name.into(),
+        Arc::new(provider),
+    );
+}
 
     /// Retrieve a provider.
     pub async fn get(
