@@ -7,7 +7,7 @@ use openai_rust_sdk::{
     OpenAIClient,
 };
 
-use domain::InterferenceRequest;
+use domain::InferenceRequest;
 use crate::{
     
     InferenceResponse,
@@ -18,7 +18,7 @@ use crate::{
 
 pub struct OpenAIProvider {
     config: OpenAIConfig,
-    client: Client,
+    client: OpenAIClient,
 }
 
 impl OpenAIProvider {
@@ -46,11 +46,7 @@ impl Provider for OpenAIProvider {
         request: InferenceRequest,
     ) -> Result<InferenceResponse, ProviderError> {
 
-       async fn execute(
-    &self,
-    request: InferenceRequest,
-) -> Result<InferenceResponse, ProviderError> {
-
+         
     let sdk_request = CreateResponseRequest::new_text(
         request.model,
         request.prompt,
@@ -73,16 +69,7 @@ impl Provider for OpenAIProvider {
 
         finish_reason: "stop".to_string(),
     })
-}
-
-        Ok(InferenceResponse {
-            content: "OpenAI Provider Skeleton".to_string(),
-            usage: Usage {
-                prompt_tokens: 0,
-                completion_tokens: 0,
-                total_tokens: 0,
-            },
-            finish_reason: "stop".to_string(),
-        })
     }
 }
+
+         

@@ -8,3 +8,5 @@ domain = { path = "../domain" }
 runtime = { path = "../runtime" }
 tokio = { version = "1", features = ["sync"] }
 uuid = { version = "1", features = ["v4", "serde"] }
+
+providers = { path = "../providers" }
