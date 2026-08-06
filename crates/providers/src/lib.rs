@@ -9,3 +9,6 @@ pub use openai::*;
 
 pub use provider::*;
 pub use types::*;
+pub mod registry;
+
+pub use registry::*;

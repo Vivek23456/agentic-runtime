@@ -5,13 +5,12 @@ use axum::{
 };
 
 use uuid::Uuid;
-use domain::Agent;
 
 use crate::{
-    models::{   
+    models::{
+        AgentResponse,
         CreateAgentRequest,
         CreateAgentResponse,
-        AgentResponse,
     },
     state::AppState,
 };
@@ -20,10 +19,9 @@ pub async fn get_agent(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<AgentResponse>, StatusCode> {
-
     let agent = state
-        .agents
-        .get(id)
+        .agent_service
+        .get_agent(id)
         .await
         .ok_or(StatusCode::NOT_FOUND)?;
 
@@ -38,33 +36,34 @@ pub async fn get_agent(
         repository: agent.repository.clone(),
     }))
 }
+
 pub async fn create_agent(
     State(state): State<AppState>,
     Json(request): Json<CreateAgentRequest>,
 ) -> Result<Json<CreateAgentResponse>, StatusCode> {
-
-    let agent = Agent::new(
-        request.name,
-        request.description,
-        request.framework,
-        request.language,
-        request.repository,
-    );
-
-    let id = agent.id;
-
-    state.agents.insert(agent).await;
+    let agent = state
+        .agent_service
+        .create_agent(
+            request.name,
+            request.description,
+            request.framework,
+            request.language,
+            request.repository,
+        )
+        .await;
 
     Ok(Json(CreateAgentResponse {
-        agent_id: id,
+        agent_id: agent.id,
     }))
 }
 
 pub async fn list_agents(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<AgentResponse>>, StatusCode> {
-
-    let agents = state.agents.list().await;
+    let agents = state
+        .agent_service
+        .list_agents()
+        .await;
 
     let mut response = Vec::with_capacity(agents.len());
 

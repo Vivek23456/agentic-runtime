@@ -1,9 +1,12 @@
-use std::sync::Arc;
-use domain::AgentRegistry;
-use runtime::{DefaultExecutor, RuntimeManager};
+use application::{
+    AgentService,
+    ExecutionService,
+    VersionService,
+};
 
 #[derive(Clone)]
 pub struct AppState {
-    pub runtime: Arc<RuntimeManager<DefaultExecutor>>,
-    pub agents: AgentRegistry,
+    pub agent_service: AgentService,
+    pub version_service: VersionService,
+    pub execution_service: ExecutionService,
 }

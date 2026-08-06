@@ -7,11 +7,7 @@ use crate::{
     routes::{
         agents::{create_agent,list_agents,get_agent},
         health::health,
-        tasks::{
-            create_task,
-            get_task,
-            list_tasks,
-        },
+       
     },
     state::AppState,
 };
@@ -19,14 +15,7 @@ use crate::{
 pub fn create_router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(health))
-        .route(
-            "/tasks",
-            post(create_task).get(list_tasks),
-        )
-        .route(
-            "/tasks/:id",
-            get(get_task),
-        )
+         
         .route(
             "/agents",
             post(create_agent).get(list_agents),

@@ -1,16 +1,19 @@
 use std::{
     net::SocketAddr,
-    sync::Arc,
+    
 };
 
-use runtime::RuntimeManager;
+
 
 use crate::{
-    router::create_router,
-    state::AppState,
-};
-use domain::AgentRegistry;
+         
+    bootstrap::bootstrap,
 
+    router::create_router,
+    
+};
+
+mod bootstrap;
 mod models;
 mod router;
 mod routes;
@@ -21,17 +24,7 @@ async fn main() {
 
     tracing_subscriber::fmt::init();
 
-    let runtime = Arc::new(
-        RuntimeManager::new(
-            4,
-            1024,
-        ),
-    );
-
-    let state = AppState {
-        runtime,
-        agents: AgentRegistry::new(),
-    };
+    let state = bootstrap().await;
 
     let app = create_router(state);
 
