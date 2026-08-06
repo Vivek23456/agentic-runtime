@@ -20,3 +20,9 @@ pub use agent_registry::*;
 pub mod execution_registry;
 
 pub use execution_registry::*;
+pub mod inference;
+
+pub use inference::*;
+mod execution_request;
+
+pub use execution_request::*;

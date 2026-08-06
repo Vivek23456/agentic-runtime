@@ -1,10 +1,7 @@
 use async_trait::async_trait;
 
-use crate::{
-    InferenceRequest,
-    InferenceResponse,
-    ProviderError,
-};
+use crate::ProviderError;
+use domain::{InterferenceRequest,InferenceRequest,Usage};
 
 #[async_trait]
 pub trait Provider: Send + Sync {

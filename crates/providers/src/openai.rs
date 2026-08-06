@@ -7,8 +7,9 @@ use openai_rust_sdk::{
     OpenAIClient,
 };
 
+use domain::InterferenceRequest;
 use crate::{
-    InferenceRequest,
+    
     InferenceResponse,
     Provider,
     ProviderError,
